@@ -2,7 +2,7 @@ import termcolor
 import logging
 import copy
 import os
-from docsim import settings
+from optw import settings
 
 
 def set_logger(context, verbose=False):

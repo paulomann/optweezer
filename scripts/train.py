@@ -6,7 +6,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from pytorch_lightning import seed_everything
 from typing import Literal, List
 import click
-from optw.models import ResNet
+from optw.models import MMIL
 from optw.utils import set_logger
 from pathlib import Path
 
@@ -20,6 +20,7 @@ logger = set_logger(Path(__file__).name, verbose=settings.verbose)
 @click.option("--name", help=f"Name of the training (for wandb)", type=click.STRING)
 @click.option("--bsz", default=16, help=f"Batch Size", type=click.INT)
 @click.option("--epochs", default=15, help=f"Number of epochs", type=click.INT)
+@click.option("--bptt-steps", default=15, help=f"Number of steps needed before propagating gradients", type=click.INT)
 @click.option(
     "--gradient-clip-val", default=0.5, help=f"Norm to clip gradients", type=click.FLOAT
 )
@@ -71,6 +72,7 @@ def train(
     name: str,
     bsz: int,
     epochs: int,
+    bptt_steps: int,
     gradient_clip_val: float,
     log_every_n_steps: int,
     lr: float,
@@ -105,9 +107,9 @@ def train(
     )
     if not wandb:
         wandb_logger = None
-    model = ResNet(
-        resnet_size="resnet34",
-        optimizer_args=optimizer_args
+    model = MMIL(
+        optimizer_args=optimizer_args,
+        ftr_size=126
     )
     trainer = pl.Trainer(
         deterministic=True,
@@ -120,7 +122,8 @@ def train(
         log_every_n_steps=log_every_n_steps,
         checkpoint_callback=checkpoint_callback,
         default_root_dir="models",
-        overfit_batches=overfit
+        overfit_batches=overfit,
+        truncated_bptt_steps=bptt_steps
     )
     trainer.fit(model, train, val)
     trainer.test(test_dataloaders=test)

@@ -2,7 +2,6 @@ from os.path import dirname
 import os
 from pathlib import Path
 import numpy as np
-from elasticsearch import Elasticsearch
 
 # logger = set_logger("DocumentController", verbose=settings.verbose)
 # logger = set_logger(Path(__file__).name, verbose=settings.verbose)
@@ -13,10 +12,12 @@ verbose = True
 ROOT = dirname(dirname(__file__))
 DATA_PATH = Path(ROOT, "data")
 MODELS_PATH = Path(ROOT, "models")
+LOG_PATH = Path(ROOT, "data", "log.txt")
 
 PARTICLE_TRAIN = Path(ROOT, "data", "train.npy")
 PARTICLE_VAL = Path(ROOT, "data", "val.npy")
 PARTICLE_TEST = Path(ROOT, "data", "test.npy")
+PARTICLE_DATASET_PATH = {"train": PARTICLE_TRAIN, "val": PARTICLE_VAL, "test": PARTICLE_TEST}
 
 Path(ROOT, "models").mkdir(parents=True, exist_ok=True) # Model checkpoints or features
 Path(ROOT, "reports").mkdir(parents=True, exist_ok=True) # Documents with text and charts documenting the results

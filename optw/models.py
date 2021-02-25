@@ -12,21 +12,18 @@ def init_weights(*models):
             if "weight" in name or "bias" in name:
                 param.data.uniform_(-0.1, 0.1)
 
-class ResNet(pl.LightningModule):
-    def __init__(
-        resnet_size: Literal["resnet18", "resnet34", "resnet50"],
-        optimizer_args: Dict[str, int]
-    ):
-        self.resnet = getattr(resnet, resnet_size)()
-        self.resnet.fc = nn.Sequential(
-            nn.Dropout(0.5), 
-            nn.Linear(12210, 512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, 2)
-        )
+class MIL(pl.LightningModule):
+    def __init__(optimizer_args: Dict[str, int], ftr_size: int = 126):
         self.optimizer_args = optimizer_args
+        self.dense = nn.Sequential(
+            nn.Dropout(0.2),
+            nn.Linear(10000, ftr_size * 2),
+            nn.ReLU(),
+            nn.Linear(ftr_size * 2, ftr_size)
+            nn.ReLU()
+            nn.Linear(ftr_size, 2)
+        )
+        self.lstm = nn.LSTM(ftr_size, ftr_size, 1, batch_first=False)
         self.save_hyperparameters()
 
     def configure_optimizers(self):
@@ -36,9 +33,11 @@ class ResNet(pl.LightningModule):
         return optimizer
 
     def forward(self, x) -> torch.Tensor:
-        return self.resnet(x)
+        x = self.dense(x)
+        outs, (ho, co) = self.lstm(x)
+        return outs, (ho, co)
 
-    def training_step(self, train_batch, batch_idx):
+    def training_step(self, train_batch, batch_idx, hiddens):
         x, y = train_batch
         logits = self(x)
         loss_fct = nn.CrossEntropyLoss()
