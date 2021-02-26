@@ -6,8 +6,12 @@ from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from pytorch_lightning import seed_everything
 from typing import Literal, List
 import click
-from optw.models import MMIL
-from optw.utils import set_logger
+
+import optw
+import optw.settings as settings
+from optw.models import MIL
+from optw.utils.logger import set_logger
+from optw.data import ParticleDataset
 from pathlib import Path
 
 logger = set_logger(Path(__file__).name, verbose=settings.verbose)
@@ -88,9 +92,14 @@ def train(
 ):
     seed_everything(seed)
     parameters = locals()
+    seq_len = 10000
+    train_dataset = ParticleDataset('train')
+    val_dataset = ParticleDataset('val')
+    test_dataset = ParticleDataset('test')
+
     settings.MAX_SEQ_LENGTH = seq_len
     gradient_accumulation_steps = 1
-    t_total = (len(train) // gradient_accumulation_steps) * epochs
+    t_total = (len(train_dataset) // gradient_accumulation_steps) * epochs
     optimizer_args = {
         "lr": lr,
         "betas": (b1, b2),
@@ -107,7 +116,7 @@ def train(
     )
     if not wandb:
         wandb_logger = None
-    model = MMIL(
+    model = MIL(
         optimizer_args=optimizer_args,
         ftr_size=126
     )
@@ -125,8 +134,8 @@ def train(
         overfit_batches=overfit,
         truncated_bptt_steps=bptt_steps
     )
-    trainer.fit(model, train, val)
-    trainer.test(test_dataloaders=test)
+    trainer.fit(model, train, val_dataset)
+    trainer.test(test_dataloaders=test_dataset)
 
 
 if __name__ == "__main__":
