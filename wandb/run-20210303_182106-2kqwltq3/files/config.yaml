@@ -1,0 +1,92 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.10.20
+    framework: lightning
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.8.5
+    t:
+      1:
+      - 1
+      - 9
+      4: 3.8.5
+      5: 0.10.20
+      8:
+      - 3
+      - 5
+b1:
+  desc: null
+  value: 0.9
+b2:
+  desc: null
+  value: 0.999
+betas:
+  desc: null
+  value:
+  - 0.9
+  - 0.999
+bptt_steps:
+  desc: null
+  value: 15
+bsz:
+  desc: null
+  value: 16
+correct_bias:
+  desc: null
+  value: true
+epochs:
+  desc: null
+  value: 15
+eps:
+  desc: null
+  value: 1.0e-06
+ftr_size:
+  desc: null
+  value: 126
+gpu:
+  desc: null
+  value: 0
+gradient_clip_val:
+  desc: null
+  value: 0.5
+log_every_n_steps:
+  desc: null
+  value: 2
+lr:
+  desc: null
+  value: 0.001
+name:
+  desc: null
+  value: null
+optimizer_args/betas:
+  desc: null
+  value:
+  - 0.9
+  - 0.999
+optimizer_args/eps:
+  desc: null
+  value: 1.0e-06
+optimizer_args/lr:
+  desc: null
+  value: 0.001
+optimizer_args/weight_decay:
+  desc: null
+  value: 0.0
+overfit:
+  desc: null
+  value: 0
+seed:
+  desc: null
+  value: 5555
+shuffle:
+  desc: null
+  value: true
+wandb:
+  desc: null
+  value: true
+weight_decay:
+  desc: null
+  value: 0.0

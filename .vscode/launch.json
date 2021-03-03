@@ -10,7 +10,12 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args" : ["--gpu", "0"]
+            "args" : ["--gpu", "0", 
+                      "--bsz", "16",
+                      "--overfit", "0",
+                      "--shuffle",
+                      "--seed", "5555",
+                      "--bptt-steps", "10"]
         }
     ]
 }

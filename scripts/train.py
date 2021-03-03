@@ -1,5 +1,7 @@
 import torch.nn as nn
 import torch
+
+from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
@@ -11,7 +13,7 @@ import optw
 import optw.settings as settings
 from optw.models import MIL
 from optw.utils.logger import set_logger
-from optw.data import ParticleDataset
+from optw.data import ParticleDataset, collate_fn
 from pathlib import Path
 
 logger = set_logger(Path(__file__).name, verbose=settings.verbose)
@@ -24,7 +26,7 @@ logger = set_logger(Path(__file__).name, verbose=settings.verbose)
 @click.option("--name", help=f"Name of the training (for wandb)", type=click.STRING)
 @click.option("--bsz", default=16, help=f"Batch Size", type=click.INT)
 @click.option("--epochs", default=15, help=f"Number of epochs", type=click.INT)
-@click.option("--bptt-steps", default=15, help=f"Number of steps needed before propagating gradients", type=click.INT)
+@click.option("--bptt-steps", default=None, help=f"Number of steps needed before propagating gradients", type=click.INT)
 @click.option(
     "--gradient-clip-val", default=0.5, help=f"Norm to clip gradients", type=click.FLOAT
 )
@@ -93,19 +95,19 @@ def train(
     seed_everything(seed)
     parameters = locals()
     seq_len = 10000
-    train_dataset = ParticleDataset('train')
-    val_dataset = ParticleDataset('val')
-    test_dataset = ParticleDataset('test')
+    train_dataloader = DataLoader(ParticleDataset('train'), batch_size= bsz, shuffle = shuffle)
+    val_dataloader = DataLoader(ParticleDataset('val'), batch_size= bsz, shuffle = False)
+    test_dataloader = DataLoader(ParticleDataset('test'), batch_size= bsz, shuffle = False)
 
     settings.MAX_SEQ_LENGTH = seq_len
     gradient_accumulation_steps = 1
-    t_total = (len(train_dataset) // gradient_accumulation_steps) * epochs
+    t_total = (len(train_dataloader) // gradient_accumulation_steps) * epochs
     optimizer_args = {
         "lr": lr,
         "betas": (b1, b2),
         "eps": eps,
-        "weight_decay": weight_decay,
-        "correct_bias": correct_bias,
+        "weight_decay": weight_decay
+        #"correct_bias": correct_bias
     }
     parameters.update(optimizer_args)
     logger.info(f"====> Parameters: {parameters}")
@@ -134,8 +136,9 @@ def train(
         overfit_batches=overfit,
         truncated_bptt_steps=bptt_steps
     )
-    trainer.fit(model, train, val_dataset)
-    trainer.test(test_dataloaders=test_dataset)
+    
+    trainer.fit(model, train_dataloader, val_dataloader)
+    #trainer.test(test_dataloaders=test_dataloader)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ class ParticleDataset(Dataset):
         self.data = self.data.astype(np.float32)
         self.data = torch.from_numpy(self.data)
         self.x = self.data[:, :-1]
-        self.y = self.data[:, -1]
+        self.y = self.data[:, -1].long()
         
 
     def __len__(self):
@@ -26,3 +26,8 @@ class ParticleDataset(Dataset):
     def __getitem__(self, i):
 
         return (self.x[i], self.y[i])
+
+def collate_fn(batch):
+    x = [item[0] for item in batch]
+    y = [item[1] for item in batch]
+    return x, y
