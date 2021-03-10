@@ -17,11 +17,13 @@ def init_weights(*models):
                 param.data.uniform_(-0.1, 0.1)
 
 class MIL(pl.LightningModule):
-    def __init__(self, optimizer_args: Dict[str, int], ftr_size: int = 126):
+    def __init__(self, optimizer_args: Dict[str, int], ftr_size: int = 126, bptt_steps: int = 100):
         super().__init__()
         self.optimizer_args = optimizer_args
  
         #self.lstm = nn.LSTM(ftr_size, ftr_size, 1, batch_first=False)
+
+
         self.lstm = nn.LSTM(1, ftr_size, 1, batch_first=False)
 
         self.classifier = nn.Sequential(
@@ -31,6 +33,7 @@ class MIL(pl.LightningModule):
         )
 
         self.ftr_size = ftr_size
+        self.split_size = bptt_steps
 
         self.save_hyperparameters()
 
@@ -44,17 +47,24 @@ class MIL(pl.LightningModule):
     def forward(self, x, hiddens=None) -> torch.Tensor:
 
         if hiddens is None:
-            hiddens = (torch.zeros(1,x.shape[0], self.ftr_size, device=x.device ),  torch.zeros(1,x.shape[0], self.ftr_size, device=x.device)) 
-        
-        _ , hiddens = self.lstm(x.reshape((10000, -1, 1)), hiddens)
+            hiddens = (torch.zeros(1, x.shape[0], self.ftr_size, device=x.device ),  
+                       torch.zeros(1, x.shape[0], self.ftr_size, device=x.device)) 
 
-        outs = self.classifier(hiddens[0]).squeeze()
-        return outs, hiddens
+        _ , hiddens = self.lstm(x.reshape((x.shape[1], -1, 1)), hiddens)
 
-    def training_step(self, train_batch, batch_idx, hiddens):
+        return (hiddens[0].detach(), hiddens[1].detach())
+
+    def training_step(self, train_batch, batch_idx):
         x, y = train_batch
 
-        logits, hiddens = self(x, hiddens)
+        splits = [x[:, i:i+self.split_size] for i in range (0, x.shape[-1], self.split_size)]
+
+        hiddens = None
+        for split in splits:
+            hiddens = self(split, hiddens)
+        
+        logits = self.classifier(hiddens[0]).squeeze()
+
         loss_fct = nn.CrossEntropyLoss()
         #loss = loss_fct(logits.view(-1, 2), y.view(-1))
         loss = loss_fct( logits.view(-1, 2), y.view(-1))
@@ -69,7 +79,7 @@ class MIL(pl.LightningModule):
             print()
         preds = preds.unsqueeze(0) if preds.dim() == 0 else preds
 
-        return {"loss": loss, "preds": preds, "targets": y, "hiddens": hiddens.detach()}
+        return {"loss": loss, "preds": preds, "targets": y}
 
     def training_epoch_end(self, outs):
         preds = []
@@ -91,7 +101,8 @@ class MIL(pl.LightningModule):
 
     def validation_step(self, val_batch, batch_idx):
         x, y = val_batch
-        logits, hiddens = self(x)
+        hiddens = self(x)
+        logits = self.classifier(hiddens[0]).squeeze()
 
         loss_fct = nn.CrossEntropyLoss()
         loss = loss_fct(logits.view(-1, 2), y.view(-1))
@@ -104,12 +115,11 @@ class MIL(pl.LightningModule):
             print(f"===>TRAIN LABEL: {y}")
             print(f"===>TRAIN ACCUR: {acc}")
             print()
-
-        return {"val_loss": loss, "preds": preds, "targets": y}
+        
+        self.log("val_acc", acc)
+        return {"val_acc": acc, "val_loss": loss, "preds": preds, "targets": y}
 
     def validation_epoch_end(self, outs):
-        
-
         
         preds = []
         targets = []
@@ -174,6 +184,15 @@ class MIL(pl.LightningModule):
     def tbptt_split_batch(self, batch, split_size):
 
         splits = []
+
+        x = batch[0]
+        y = batch[1]
+
+
+        splits = [(x[:, i:i+split_size], y) for i in range (0, x.shape[-1], split_size)]
+
+    
+
     #    for t in range(0, 10000, split_size):
     #        batch_split = []
     #        for i, x in enumerate(batch):

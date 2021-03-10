@@ -1,0 +1,1 @@
+{"grad_2.0_norm_classifier.2.weight": 0.0208, "grad_2.0_norm_classifier.2.bias": 0.0366, "grad_2.0_norm_total": 0.0421, "epoch": 13, "_runtime": 103, "_timestamp": 1615402911, "_step": 625, "val_acc": 0.0, "val_loss": 1.1041041612625122, "train_loss": 0.6366822719573975, "train_acc": 0.6666666865348816}

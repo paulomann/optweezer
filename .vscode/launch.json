@@ -15,7 +15,7 @@
                       "--overfit", "0",
                       "--shuffle",
                       "--seed", "5555",
-                      "--bptt-steps", "10"]
+                      "--bptt-steps", "100"]
         }
     ]
 }

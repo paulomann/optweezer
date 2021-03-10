@@ -1,0 +1,1 @@
+{"grad_2.0_norm_lstm.weight_ih_l0": 0.0002, "grad_2.0_norm_lstm.weight_hh_l0": 0.0047, "grad_2.0_norm_lstm.bias_ih_l0": 0.0017, "grad_2.0_norm_lstm.bias_hh_l0": 0.0017, "grad_2.0_norm_classifier.2.weight": 0.0512, "grad_2.0_norm_classifier.2.bias": 0.0013, "grad_2.0_norm_total": 0.0515, "epoch": 0, "_runtime": 156, "_timestamp": 1615400802, "_step": 45}

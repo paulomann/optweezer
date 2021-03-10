@@ -120,7 +120,8 @@ def train(
         wandb_logger = None
     model = MIL(
         optimizer_args=optimizer_args,
-        ftr_size=126
+        ftr_size= 126,
+        bptt_steps = bptt_steps
     )
     trainer = pl.Trainer(
         deterministic=True,
@@ -134,7 +135,8 @@ def train(
         checkpoint_callback=checkpoint_callback,
         default_root_dir="models",
         overfit_batches=overfit,
-        truncated_bptt_steps=bptt_steps
+        num_sanity_val_steps= 1
+        
     )
     
     trainer.fit(model, train_dataloader, val_dataloader)
