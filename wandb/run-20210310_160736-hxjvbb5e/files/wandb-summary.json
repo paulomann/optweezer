@@ -1,0 +1,1 @@
+{"val_acc": 1.0, "val_loss": 0.5717019438743591, "epoch": 40, "train_loss": 0.5712961554527283, "train_acc": 1.0, "_runtime": 15, "_timestamp": 1615403272, "_step": 40, "grad_2.0_norm_classifier.2.weight": 0.1832, "grad_2.0_norm_classifier.2.bias": 0.6193, "grad_2.0_norm_total": 0.6458}

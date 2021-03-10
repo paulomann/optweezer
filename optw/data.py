@@ -26,8 +26,3 @@ class ParticleDataset(Dataset):
     def __getitem__(self, i):
 
         return (self.x[i], self.y[i])
-
-def collate_fn(batch):
-    x = [item[0] for item in batch]
-    y = [item[1] for item in batch]
-    return x, y

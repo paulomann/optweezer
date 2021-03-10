@@ -8,6 +8,10 @@ import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_sequence
 import collections
 
+import wandb
+import numpy as np
+from sklearn.metrics import precision_recall_fscore_support
+
 
 
 def init_weights(*models):
@@ -44,29 +48,48 @@ class MIL(pl.LightningModule):
 
         return optimizer
 
-    def forward(self, x, hiddens=None) -> torch.Tensor:
 
-        if hiddens is None:
-            hiddens = (torch.zeros(1, x.shape[0], self.ftr_size, device=x.device ),  
-                       torch.zeros(1, x.shape[0], self.ftr_size, device=x.device)) 
+    def create_hiddens(self, x):
+        
+        if isinstance(x, torch.Tensor):
+            batch_size = x.shape[0]
+            device = x.device
+        else:
+            batch_size = x[0].shape[0]
+            device = x[0].device
+
+        hiddens = (torch.zeros(1, batch_size, self.ftr_size, device=device ),  
+            torch.zeros(1, batch_size, self.ftr_size, device=device)) 
+        
+        return hiddens
+                       
+                       
+    def forward(self, x) -> torch.Tensor:
+        
+        hiddens = self.create_hiddens(x)
+
+        #if isinstance(x, torch.Tensor):
+        #    _ , hiddens = self.lstm(x.reshape((x.shape[1], -1, 1)), hiddens)
+
+        #else:
+        #    for split in x:
+        #        _ , hiddens = self.lstm(split.reshape((split.shape[1], -1, 1)), hiddens)
+        #        hiddens = (hiddens[0].detach(), hiddens[1].detach())
 
         _ , hiddens = self.lstm(x.reshape((x.shape[1], -1, 1)), hiddens)
+        logits = self.classifier(hiddens[0]).squeeze()
 
-        return (hiddens[0].detach(), hiddens[1].detach())
+        return logits
 
     def training_step(self, train_batch, batch_idx):
         x, y = train_batch
 
-        splits = [x[:, i:i+self.split_size] for i in range (0, x.shape[-1], self.split_size)]
-
-        hiddens = None
-        for split in splits:
-            hiddens = self(split, hiddens)
+        #splits = [x[:, i:i+self.split_size] for i in range (0, x.shape[-1], self.split_size)]
+        #logits = self(splits)
         
-        logits = self.classifier(hiddens[0]).squeeze()
+        logits = self(x)
 
         loss_fct = nn.CrossEntropyLoss()
-        #loss = loss_fct(logits.view(-1, 2), y.view(-1))
         loss = loss_fct( logits.view(-1, 2), y.view(-1))
         with torch.no_grad():
 
@@ -101,8 +124,7 @@ class MIL(pl.LightningModule):
 
     def validation_step(self, val_batch, batch_idx):
         x, y = val_batch
-        hiddens = self(x)
-        logits = self.classifier(hiddens[0]).squeeze()
+        logits = self(x)
 
         loss_fct = nn.CrossEntropyLoss()
         loss = loss_fct(logits.view(-1, 2), y.view(-1))

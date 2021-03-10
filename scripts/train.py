@@ -13,7 +13,7 @@ import optw
 import optw.settings as settings
 from optw.models import MIL
 from optw.utils.logger import set_logger
-from optw.data import ParticleDataset, collate_fn
+from optw.data import ParticleDataset
 from pathlib import Path
 
 logger = set_logger(Path(__file__).name, verbose=settings.verbose)
@@ -140,7 +140,7 @@ def train(
     )
     
     trainer.fit(model, train_dataloader, val_dataloader)
-    #trainer.test(test_dataloaders=test_dataloader)
+    trainer.test(test_dataloaders=test_dataloader)
 
 
 if __name__ == "__main__":

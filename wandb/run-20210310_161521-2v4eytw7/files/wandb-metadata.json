@@ -1,0 +1,38 @@
+{
+    "os": "Windows-10-10.0.19041-SP0",
+    "python": "3.8.5",
+    "heartbeatAt": "2021-03-10T19:15:23.986496",
+    "startedAt": "2021-03-10T19:15:21.216715",
+    "docker": null,
+    "gpu": "GeForce GT 710",
+    "gpu_count": 2,
+    "cpu_count": 16,
+    "cuda": null,
+    "args": [
+        "--gpu",
+        "0",
+        "--bsz",
+        "32",
+        "--overfit",
+        "0",
+        "--epochs",
+        "1",
+        "--shuffle",
+        "--seed",
+        "5555",
+        "--bptt-steps",
+        "100"
+    ],
+    "state": "running",
+    "codePath": "scripts\\train.py",
+    "program": "d:\\puc\\optweezer\\scripts\\train.py",
+    "git": {
+        "remote": "https://github.com/paulomann/optweezer.git",
+        "commit": "54226a3420468364a96e30a79168cc401df75814"
+    },
+    "email": "bruno.marques@ufabc.edu.br",
+    "root": "D:/puc/optweezer",
+    "host": "RYZENCUBE",
+    "username": "bruno",
+    "executable": "C:\\Users\\bruno\\miniconda3\\envs\\mmmc\\python.exe"
+}
