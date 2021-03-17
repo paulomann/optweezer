@@ -64,27 +64,36 @@ class LSTM(nn.Module):
 
 
 class Convolutional(nn.Module):
-    def __init__(self, input_size, dropout=0.2):
+    def __init__(self, dropout=0.2):
         super(Convolutional, self).__init__()
 
         self.layer = nn.Sequential(
-            nn.Conv1d(1, 64, kernel_size=7, stride=1),
-            nn.BatchNorm1d(),
+            nn.AvgPool1d(kernel_size=9, stride = 4),
+            nn.Conv1d(1, 64, kernel_size=9, stride=1),
+            nn.BatchNorm1d(64),
             nn.ReLU(),
-            nn.Conv1d(64, 128, kernel_size=5, stride=1),
-            nn.BatchNorm1d(),
+            nn.AvgPool1d(kernel_size=9, stride = 4),
+            nn.Dropout(p=dropout),
+            nn.Conv1d(64, 128, kernel_size=9, stride=1),
+            nn.BatchNorm1d(128),
             nn.ReLU(),
-            nn.Conv1d(128, 256, kernel_size=3, stride=1),
-            nn.Linear(input_size, hidden_layers),
-            nn.ReLU(),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_layers, hidden_layers//2),
-            nn.ReLU(),
-            nn.Linear(hidden_layers//2, 2)
+            nn.AvgPool1d(kernel_size=9, stride = 4),
+            nn.Dropout(p=dropout),
+            nn.Conv1d(128, 256, kernel_size=9, stride=1),
+            nn.AvgPool1d(kernel_size=9, stride = 4),
+            nn.Dropout(p=dropout),
+            nn.Conv1d(256, 512, kernel_size=9, stride=1),
+            nn.AvgPool1d(kernel_size=25), #global avg pool
         )
 
+        self.classifier = Classifier(512)
 
 
     def forward(self, x) -> torch.Tensor:
-        return self.layers(x).squeeze()
+
+        x = x.reshape((-1, 1, x.shape[1]))
+        x = self.layer(x)
+        x = x.squeeze()
+        return  self.classifier(x)
+        #return self.layer(x).squeeze()
 

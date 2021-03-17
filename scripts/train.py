@@ -75,7 +75,7 @@ logger = set_logger(Path(__file__).name, verbose=settings.verbose)
 )
 @click.option(
     "--model",
-    help=f"Model to use for training. Use one of the follow: baseline; lstm; hopfield",
+    help=f"Model to use for training. Use one of the follow: baseline; lstm; convolutional; hopfield",
     type=click.STRING,
     default='baseline'
 )

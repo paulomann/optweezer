@@ -12,7 +12,7 @@ import wandb
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
 
-from optw.layers import Classifier, MLP, LSTM
+from optw.layers import Classifier, MLP, LSTM, Convolutional
 
 
 def init_weights(*models):
@@ -32,6 +32,8 @@ class MIL(pl.LightningModule):
             self.model = MLP(ftr_size, hidden_layers=512)
         elif model == 'lstm':
             self.model = LSTM(ftr_size)
+        elif model == 'convolutional':
+            self.model = Convolutional()
             
         init_weights(self.model)
         self.save_hyperparameters()
