@@ -133,3 +133,4 @@ dmypy.json
 # Wand logs
 wandb/
 
+models/
