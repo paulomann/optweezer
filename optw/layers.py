@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from optw.hopfield import HopfieldPooling
 
 class Classifier(nn.Module):
 
@@ -83,10 +84,11 @@ class Convolutional(nn.Module):
             nn.AvgPool1d(kernel_size=9, stride = 4),
             nn.Dropout(p=dropout),
             nn.Conv1d(256, 512, kernel_size=9, stride=1),
-            nn.AvgPool1d(kernel_size=25), #global avg pool
+            # nn.AvgPool1d(kernel_size=25), #global avg pool
         )
-
-        self.classifier = Classifier(512)
+        self.hop = HopfieldPooling(input_size = 26, hidden_size = 16, quantity = 14)
+        self.classifier = Classifier(364)
+        # self.classifier = Classifier(512)
 
 
     def forward(self, x) -> torch.Tensor:
@@ -94,6 +96,7 @@ class Convolutional(nn.Module):
         x = x.reshape((-1, 1, x.shape[1]))
         x = self.layer(x)
         x = x.squeeze()
+        x = self.hop(x)
         return  self.classifier(x)
         #return self.layer(x).squeeze()
 
