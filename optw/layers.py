@@ -63,3 +63,28 @@ class LSTM(nn.Module):
 
 
 
+class Convolutional(nn.Module):
+    def __init__(self, input_size, dropout=0.2):
+        super(Convolutional, self).__init__()
+
+        self.layer = nn.Sequential(
+            nn.Conv1d(1, 64, kernel_size=7, stride=1),
+            nn.BatchNorm1d(),
+            nn.ReLU(),
+            nn.Conv1d(64, 128, kernel_size=5, stride=1),
+            nn.BatchNorm1d(),
+            nn.ReLU(),
+            nn.Conv1d(128, 256, kernel_size=3, stride=1),
+            nn.Linear(input_size, hidden_layers),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_layers, hidden_layers//2),
+            nn.ReLU(),
+            nn.Linear(hidden_layers//2, 2)
+        )
+
+
+
+    def forward(self, x) -> torch.Tensor:
+        return self.layers(x).squeeze()
+
