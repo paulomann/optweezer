@@ -1,0 +1,1 @@
+{"columns": ["class", "fpr", "tpr"], "data": [["Negative", 0.0, 0.0], ["Negative", 0.0, 0.026], ["Negative", 0.0, 1.0], ["Negative", 1.0, 1.0], ["Positive", 0.0, 0.0], ["Positive", 0.0, 0.04], ["Positive", 0.0, 1.0], ["Positive", 1.0, 1.0]]}

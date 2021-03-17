@@ -12,6 +12,7 @@ import wandb
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
 
+from optw.layers import Classifier, MLP, LSTM
 
 
 def init_weights(*models):
@@ -21,65 +22,28 @@ def init_weights(*models):
                 param.data.uniform_(-0.1, 0.1)
 
 class MIL(pl.LightningModule):
-    def __init__(self, optimizer_args: Dict[str, int], ftr_size: int = 126, bptt_steps: int = 100):
+    def __init__(self, optimizer_args: Dict[str, int], model: Literal["baseline", "lstm", "hopfield"], ftr_size: int = 126, bptt_steps: int = 100):
         super().__init__()
         self.optimizer_args = optimizer_args
- 
-        #self.lstm = nn.LSTM(ftr_size, ftr_size, 1, batch_first=False)
 
 
-        self.lstm = nn.LSTM(1, ftr_size, 1, batch_first=False)
 
-        self.classifier = nn.Sequential(
-            nn.Dropout(0.2),
-            nn.ReLU(),
-            nn.Linear(ftr_size, 2)
-        )
-
-        self.ftr_size = ftr_size
-        self.split_size = bptt_steps
-
+        if model == 'baseline':
+            self.model = MLP(ftr_size, hidden_layers=512)
+        elif model == 'lstm':
+            self.model = LSTM(ftr_size)
+            
+        init_weights(self.model)
         self.save_hyperparameters()
 
     def configure_optimizers(self):
         # A gente pode botar o scheduler aqui também
         optimizer = Adam(self.parameters(), **self.optimizer_args)
-        #optimizer = Adam(lr = 1e-3, betas = (0.9, 0.999), eps=1e-08, weight_decay=1e-5)
 
         return optimizer
-
-
-    def create_hiddens(self, x):
-        
-        if isinstance(x, torch.Tensor):
-            batch_size = x.shape[0]
-            device = x.device
-        else:
-            batch_size = x[0].shape[0]
-            device = x[0].device
-
-        hiddens = (torch.zeros(1, batch_size, self.ftr_size, device=device ),  
-            torch.zeros(1, batch_size, self.ftr_size, device=device)) 
-        
-        return hiddens
-                       
-                       
+     
     def forward(self, x) -> torch.Tensor:
-        
-        hiddens = self.create_hiddens(x)
-
-        #if isinstance(x, torch.Tensor):
-        #    _ , hiddens = self.lstm(x.reshape((x.shape[1], -1, 1)), hiddens)
-
-        #else:
-        #    for split in x:
-        #        _ , hiddens = self.lstm(split.reshape((split.shape[1], -1, 1)), hiddens)
-        #        hiddens = (hiddens[0].detach(), hiddens[1].detach())
-
-        _ , hiddens = self.lstm(x.reshape((x.shape[1], -1, 1)), hiddens)
-        logits = self.classifier(hiddens[0]).squeeze()
-
-        return logits
+        return self.model(x).squeeze()
 
     def training_step(self, train_batch, batch_idx):
         x, y = train_batch
@@ -203,42 +167,13 @@ class MIL(pl.LightningModule):
         )
         self.log_dict({"precision": precision, "recall": recall, "fscore": fscore})
         
-    def tbptt_split_batch(self, batch, split_size):
+    #def tbptt_split_batch(self, batch, split_size):
 
-        splits = []
+    #    splits = []
+    #    x = batch[0]
+    #    y = batch[1]
 
-        x = batch[0]
-        y = batch[1]
+    #    splits = [(x[:, i:i+split_size], y) for i in range (0, x.shape[-1], split_size)]
+    #    return splits
 
 
-        splits = [(x[:, i:i+split_size], y) for i in range (0, x.shape[-1], split_size)]
-
-    
-
-    #    for t in range(0, 10000, split_size):
-    #        batch_split = []
-    #        for i, x in enumerate(batch):
-    #            if isinstance(x, torch.Tensor):
-    #                split_x = x[:, t:t + split_size]
-    #            elif isinstance(x, collections.Sequence):
-    #                split_x = [None] * len(x)
-    #                for batch_idx in range(len(x)):
-    #                    split_x[batch_idx] = x[batch_idx][t:t + split_size]
-#
-    #            batch_split.append(split_x)
-#
-    #        splits.append(batch_split)
-
-        return splits
-
-    def init_layers(self):
-        init_weights(self.resnet.fc)
-
-    def freeze_layers(self):
-        for child in self.resnet.children():
-            for param in child.parameters():
-                param.requires_grad = False
-
-        for child in self.resnet.fc.children():
-            for param in child.parameters():
-                param.requires_grad = True

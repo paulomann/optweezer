@@ -73,6 +73,12 @@ logger = set_logger(Path(__file__).name, verbose=settings.verbose)
     type=click.INT,
     default=0
 )
+@click.option(
+    "--model",
+    help=f"Model to use for training. Use one of the follow: baseline; lstm; hopfield",
+    type=click.STRING,
+    default='baseline'
+)
 def train(
     gpu: int,
     name: str,
@@ -90,7 +96,8 @@ def train(
     wandb: bool,
     shuffle: bool,
     seed: int,
-    overfit: int
+    overfit: int,
+    model: str
 ):
     seed_everything(seed)
     parameters = locals()
@@ -118,9 +125,16 @@ def train(
     )
     if not wandb:
         wandb_logger = None
-    model = MIL(
+
+    if model == 'baseline':
+        ftr_size = train_dataloader.dataset.sequence_length
+    else:
+        ftr_size = 126
+
+    ml_model = MIL(
         optimizer_args=optimizer_args,
-        ftr_size= 126,
+        model = model,
+        ftr_size= ftr_size,
         bptt_steps = bptt_steps
     )
     trainer = pl.Trainer(
@@ -139,7 +153,7 @@ def train(
         
     )
     
-    trainer.fit(model, train_dataloader, val_dataloader)
+    trainer.fit(ml_model, train_dataloader, val_dataloader)
     trainer.test(test_dataloaders=test_dataloader)
 
 

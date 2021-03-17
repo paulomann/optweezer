@@ -16,6 +16,7 @@ class ParticleDataset(Dataset):
         self.data = torch.from_numpy(self.data)
         self.x = self.data[:, :-1]
         self.y = self.data[:, -1].long()
+        self.sequence_length = self.x.shape[1]
         
 
     def __len__(self):

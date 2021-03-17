@@ -14,13 +14,14 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args" : ["--gpu", "0", 
-                      "--bsz", "32",
+                      "--bsz", "256",
                       "--overfit", "0",
-                      "--epochs", "1",
-                      "--lr", "0.00001",
+                      "--epochs", "10",
+                      "--lr", "0.001",
                       "--shuffle",
                       "--seed", "5555",
-                      "--bptt-steps", "100"]
+                      "--bptt-steps", "100",
+                      "--model", "baseline"]
         }
     ]
 }
