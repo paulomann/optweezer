@@ -116,6 +116,8 @@ def create_samples(num_samples, spread_min, spread_max):
 @click.option("--spread-min", default=20, help=f"min spread", type=click.INT)
 @click.option("--spread-max", default=40, help=f"max spread", type=click.INT)
 
+
+
 def gen_dataset(n : int,
                 spread_min: int,
                 spread_max: int ):
@@ -123,11 +125,11 @@ def gen_dataset(n : int,
     samples = create_samples(100, spread_min=spread_min, spread_max=spread_max )
     train, test = train_test_split(samples,  test_size=0.25, stratify=samples[:,-1])
     val, test = train_test_split(test,  test_size=0.5, stratify=test[:,-1])
-    return train, val, test
+
+    np.save("train.npy", train, allow_pickle=False)
+    np.save("val.npy", val, allow_pickle=False)
+    np.save("test.npy", test, allow_pickle=False)
 
 if __name__ == '__main__':
 
     train, val, test = gen_dataset()
-    np.save("train.npy", train, allow_pickle=False)
-    np.save("val.npy", val, allow_pickle=False)
-    np.save("test.npy", test, allow_pickle=False)
