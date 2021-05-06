@@ -83,7 +83,7 @@ class Convolutional(nn.Module):
             nn.AvgPool1d(kernel_size=9, stride = 4),
             nn.Dropout(p=dropout),
             nn.Conv1d(256, 512, kernel_size=9, stride=1),
-            # nn.AvgPool1d(kernel_size=25), #global avg pool
+            nn.AvgPool1d(kernel_size=25), #global avg pool
         )
         self.classifier = Classifier(512)
 
