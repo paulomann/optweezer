@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+import click
 
 k_B = 1.38e-23 # Boltzmann cte. in J / K
 T = 300 # temperature in Kelvin
@@ -15,8 +16,7 @@ epocas = 5 #epocas de treinamento
 
 trace_size = int((max_time/dt)+1)  
 
-spread_min = 20
-spread_max = 40
+
 
 def linear_simulation(t_max, dt, initial_position, k_spring, gamma):
     """
@@ -88,7 +88,7 @@ def non_linear_simulation(t_max, dt, initial_position, k_spring, k_a, gamma):
         
     return positions
 
-def create_samples(num_samples):
+def create_samples(num_samples, spread_min, spread_max):
     
     k_array = np.linspace(spread_min, spread_max, num=int(num_samples/2))
     k_array = k_array * gamma
@@ -99,7 +99,6 @@ def create_samples(num_samples):
     max_value =  max(np.max(linear), np.max(non_linear))
     linear = linear/max_value
     non_linear = non_linear/max_value
-    #TODO change
 
     linear[:,-1]=1.0
     
@@ -112,12 +111,23 @@ def create_samples(num_samples):
 
     return samples
 
-if __name__ == '__main__':
-    samples = create_samples(100)
+@click.command()
+@click.option("--n", default=10000, help=f"number of samples to generate", type=click.INT)
+@click.option("--spread-min", default=20, help=f"min spread", type=click.INT)
+@click.option("--spread-max", default=40, help=f"max spread", type=click.INT)
 
+def gen_dataset(n : int,
+                spread_min: int,
+                spread_max: int ):
+
+    samples = create_samples(100, spread_min=spread_min, spread_max=spread_max )
     train, test = train_test_split(samples,  test_size=0.25, stratify=samples[:,-1])
     val, test = train_test_split(test,  test_size=0.5, stratify=test[:,-1])
+    return train, val, test
 
+if __name__ == '__main__':
+
+    train, val, test = gen_dataset()
     np.save("train.npy", train, allow_pickle=False)
     np.save("val.npy", val, allow_pickle=False)
     np.save("test.npy", test, allow_pickle=False)
