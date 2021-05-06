@@ -1,0 +1,100 @@
+commit 805c69ca5b1a17e278a370ef1792ba631b467ff9 (HEAD -> main, origin/main, orig
+in/HEAD)
+Author: Paulo Mann <paulomann@id.uff.br>
+Date:   Wed Mar 17 19:15:24 2021 -0300
+
+    Adding scheduler
+
+commit b761c2a1dba81b66648faebf0372e01ef58c0b76
+Author: Paulo Mann <paulomann@id.uff.br>
+Date:   Wed Mar 17 18:53:27 2021 -0300
+
+    Added hopfield networks to training
+
+commit 6ace3aa3bc408d8482c20ed6391a55e462cbf8be
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Wed Mar 17 18:41:16 2021 -0300
+
+    convolutional features
+
+commit cdea1d663fae38fb7879cd432d8e1d204846c97b
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Wed Mar 17 17:30:34 2021 -0300
+
+    update gitignore
+
+commit dc33ba075a86033191b0eeccc92f52086d8e826b
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Wed Mar 17 17:29:09 2021 -0300
+
+    removed checkpoint files
+
+commit cfd39ed0046eeafd64c1717e8b98c69f63f49fa4
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Wed Mar 17 16:53:32 2021 -0300
+
+    wandb gitignore
+
+commit 3eaafbf4fbff34a1485e68629561df2f958cae9d
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Wed Mar 17 16:49:05 2021 -0300
+
+    Baseline model
+
+commit adabd4148c9109c8aaf7ffd33f244a729ebae625
+Author: Paulo Mann <paulomann@id.uff.br>
+Date:   Wed Mar 17 15:44:33 2021 -0300
+
+    Added layers.py
+
+commit fbcf16e7e4e1393732686501f29a4561f49c12bb
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Wed Mar 10 17:24:37 2021 -0300
+
+    unsorted dataset
+
+commit 9b6ef01be5e14fc527997a74f52de612585f2373
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Wed Mar 10 17:23:56 2021 -0300
+
+    full lstm (without bptt)
+
+commit 54226a3420468364a96e30a79168cc401df75814
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Wed Mar 10 16:03:05 2021 -0300
+
+    first LSTM model
+
+commit db659363495760494d58b7b8ae638f1dc408c07b
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Wed Mar 3 19:24:35 2021 -0300
+
+    add lstm model
+
+commit 70602c0b3c10fd26d9dc8a7510d64f5568df2175
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Thu Feb 25 21:35:09 2021 -0300
+
+    fixed imports
+
+commit d3b8403f095416b3f7cf2a6ded8c0bc230399f7e
+Author: Paulo Mann <paulo.mann@lmdc.uff.br>
+Date:   Thu Feb 25 20:44:21 2021 -0300
+
+    Created PyTorch dataset. Included LSTM for testing
+
+commit 3b42533942514637c64d6e4887a5806e7657cbd3
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Thu Feb 25 19:47:58 2021 -0300
+
+    update dataset
+
+commit 24dc12c43e8d5fe43c80142b358f08419637b0fe
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Thu Feb 25 19:05:53 2021 -0300
+
+    first dataset
+
+commit 568c1fc443866143bd05708645b1dea875100ddf
+Author: Bruno Marques <bruno.marques@ufabc.edu.br>
+Date:   Thu Feb 25 19:03:11 2021 -0300

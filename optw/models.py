@@ -22,12 +22,9 @@ def init_weights(*models):
                 param.data.uniform_(-0.1, 0.1)
 
 class MIL(pl.LightningModule):
-    def __init__(self, optimizer_args: Dict[str, int], model: Literal["baseline", "lstm", "hopfield"], ftr_size: int = 126, bptt_steps: int = 100):
+    def __init__(self, optimizer_args: Dict[str, int], model: Literal["baseline", "lstm", "convolutional"], ftr_size: int = 126, bptt_steps: int = 100):
         super().__init__()
         self.optimizer_args = optimizer_args
-
-
-
         if model == 'baseline':
             self.model = MLP(ftr_size, hidden_layers=512)
         elif model == 'lstm':
