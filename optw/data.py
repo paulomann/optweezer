@@ -1,13 +1,12 @@
 from torch.utils.data import Dataset
 from optw import settings
-from typing import Literal
 import numpy as np
 import torch
 from optw.utils.logger import set_logger
 
 class ParticleDataset(Dataset):
 
-    def __init__(self, split: Literal["train", "test", "val"]):
+    def __init__(self, split):
 
         self.logger = set_logger("ParticleDataset")
         path = settings.PARTICLE_DATASET_PATH[split]
