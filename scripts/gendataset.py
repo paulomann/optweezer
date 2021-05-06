@@ -122,7 +122,7 @@ def gen_dataset(n : int,
                 spread_min: int,
                 spread_max: int ):
 
-    samples = create_samples(100, spread_min=spread_min, spread_max=spread_max )
+    samples = create_samples(n, spread_min=spread_min, spread_max=spread_max )
     train, test = train_test_split(samples,  test_size=0.25, stratify=samples[:,-1])
     val, test = train_test_split(test,  test_size=0.5, stratify=test[:,-1])
 
