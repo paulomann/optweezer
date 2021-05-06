@@ -1,6 +1,6 @@
 from torchvision.models import resnet 
 import pytorch_lightning as pl
-from typing import Literal, Dict
+from typing import Dict
 import torch.nn as nn
 from torch.optim import Adam
 import torch
@@ -22,7 +22,7 @@ def init_weights(*models):
                 param.data.uniform_(-0.1, 0.1)
 
 class MIL(pl.LightningModule):
-    def __init__(self, optimizer_args: Dict[str, int], model: Literal["baseline", "lstm", "convolutional"], ftr_size: int = 126, bptt_steps: int = 100):
+    def __init__(self, optimizer_args: Dict[str, int], model, ftr_size: int = 126, bptt_steps: int = 100):
         super().__init__()
         self.optimizer_args = optimizer_args
         if model == 'baseline':
