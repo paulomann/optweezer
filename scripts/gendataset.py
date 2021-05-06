@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import click
+from tqdm import tqdm
 
 k_B = 1.38e-23 # Boltzmann cte. in J / K
 T = 300 # temperature in Kelvin
@@ -92,9 +93,17 @@ def create_samples(num_samples, spread_min, spread_max):
     
     k_array = np.linspace(spread_min, spread_max, num=int(num_samples/2))
     k_array = k_array * gamma
-    linear = np.array([np.append(linear_simulation(max_time,dt,x0,k,gamma), 0.0) for k in k_array])
 
-    non_linear = np.array([np.append(non_linear_simulation(max_time,dt,x0,k,k*0.5*1e14,gamma), 0.0) for k in k_array])
+    linear = []
+    non_linear = []
+    for k in tqdm(k_array):
+        linear.append(np.append(linear_simulation(max_time,dt,x0,k,gamma), 0.0))
+        non_linear.append(np.append(non_linear_simulation(max_time,dt,x0,k,k*0.5*1e14,gamma), 0.0))
+    
+    linear = np.array(linear)
+    non_linear = np.array(non_linear)
+    #linear = np.array([np.append(linear_simulation(max_time,dt,x0,k,gamma), 0.0) for k in k_array])
+    #non_linear = np.array([np.append(non_linear_simulation(max_time,dt,x0,k,k*0.5*1e14,gamma), 0.0) for k in k_array])
     
     max_value =  max(np.max(linear), np.max(non_linear))
     linear = linear/max_value
